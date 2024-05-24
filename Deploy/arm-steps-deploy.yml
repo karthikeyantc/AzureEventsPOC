@@ -9,7 +9,7 @@ parameters:
 steps:
 - script: |
     echo "Listing Deploy directory:"
-    dir 'd:\a\1\drop\Resources\'
+    dir 'd:\a\1\'
   displayName: 'List Deploy directory'
 - script: |
     echo "Listing Deploy directory:"
