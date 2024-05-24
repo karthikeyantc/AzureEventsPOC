@@ -1,0 +1,38 @@
+parameters:
+  taskAzureResourceManagerConnection: ''
+  taskResourceGroupName: ''
+  taskEnvironmentFilePath: ''
+  taskLocation: ''
+  taskSubscriptionId: ''
+  taskOverideParameters: ''
+
+steps:
+- template: arm-resources-steps-deploy.yml
+  parameters:
+    name: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Deploy Resources to Azure'
+    azureResourceManagerConnection: ${{ parameters.taskAzureResourceManagerConnection }}
+    resourceGroupName: ${{ parameters.taskResourceGroupName }}
+    file: 'd:\a\1\drop\AzureEvent\Resources\azuredeploy.json'
+    csmParametersFile: ${{ parameters.taskEnvironmentFilePath }}
+    Location: ${{ parameters.taskLocation }}
+    subscriptionId: ${{ parameters.taskSubscriptionId }}
+    overrideParameters: ${{ parameters.taskOverideParameters }}
+
+- task: ARM Outputs@5
+  displayName: 'ARM Outputs'
+  inputs:
+    ConnectedServiceNameARM: ${{ parameters.taskAzureResourceManagerConnection }}
+    ResourceGroupName: ${{ parameters.taskResourceGroupName }}'
+    Prefix: 'ARMOutput_'
+    whenLastDeploymentFailed: 'fail'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Deploy Azure Function App'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: ${{ parameters.taskSubscriptionId }}
+    appType: 'functionApp'
+    WebAppName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
+    packageForWindows: '$(Pipeline.Workspace)/**/AzureEvent.Function.zip'
+    ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}

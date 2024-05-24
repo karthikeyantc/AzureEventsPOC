@@ -1,0 +1,26 @@
+parameters:
+  name: ''
+  displayName: ''
+  azureResourceManagerConnection: ''
+  resourceGroupName: ''
+  file: ''
+  csmParametersFile: ''
+  overrideParameters: ''
+  Location: ''
+  subscriptionId: ''
+
+steps:
+- task: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName }}
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ${{ parameters.azureResourceManagerConnection }}
+    subscriptionId: ${{ parameters.subscriptionId }}
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: ${{ parameters.resourceGroupName }}
+    location: ${{ parameters.Location }}
+    templateLocation: 'Linked artifact'
+    csmFile: ${{ parameters.file }}
+    csmParametersFile: ${{ parameters.csmParametersFile }}
+    overrideParameters: ${{ parameters.overrideParameters }}
+    deploymentMode: 'Incremental'
