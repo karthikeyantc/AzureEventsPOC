@@ -63,7 +63,7 @@ stages:
             parameters:
               taskAzureResourceManagerConnection: 'Azure For Students'
               taskResourceGroupName: 'rg-azureevent-dev'
-              taskEnvironmentFilePath: '$(build.artifactStagingDirectory)/Resources/azuredeploy.parameters.json'
+              taskEnvironmentFilePath: '$(build.artifactStagingDirectory)/drop/Resources/azuredeploy.parameters.json'
               taskLocation: 'East US'
               taskSubscriptionId: '7f6a8cca-0003-48bf-bc34-52e6710ed352'
               taskOverideParameters: '-webAppName $(solution)-dev -storageAccountName $(solution)dev -location "East US"'
