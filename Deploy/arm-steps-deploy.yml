@@ -7,6 +7,10 @@ parameters:
   taskOverideParameters: ''
 
 steps:
+- script: |
+    echo "Listing Deploy directory:"
+    ls $(build.artifactStagingDirectory)/AzureEvent/Resources
+  displayName: 'List Deploy directory'
 - template: arm-resources-steps-deploy.yml
   parameters:
     name: AzureResourceManagerTemplateDeployment@3
