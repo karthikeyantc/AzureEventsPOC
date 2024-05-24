@@ -9,11 +9,11 @@ parameters:
 steps:
 - script: |
     echo "Listing Deploy directory:"
-    dir $(build.artifactStagingDirectory)
+    dir 'd:\a\1\drop\Resources\'
   displayName: 'List Deploy directory'
 - script: |
     echo "Listing Deploy directory:"
-    dir $(build.artifactStagingDirectory)/drop
+    dir 'd:\a\1\a\'
   displayName: 'List Deploy directory'
 - template: arm-resources-steps-deploy.yml
   parameters:
