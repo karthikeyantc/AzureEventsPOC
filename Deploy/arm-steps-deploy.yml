@@ -9,7 +9,7 @@ parameters:
 steps:
 - script: |
     echo "Listing Deploy directory:"
-    ls $(build.artifactStagingDirectory)\AzureEvent\Resources
+    ls $(build.artifactStagingDirectory)
   displayName: 'List Deploy directory'
 - template: arm-resources-steps-deploy.yml
   parameters:
