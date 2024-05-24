@@ -37,7 +37,7 @@ stages:
       displayName: 'Copy Files to: $(build.artifactStagingDirectory)'
       inputs:
         SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: AzureEvent\**
+        Contents: '**'
         TargetFolder: '$(build.artifactStagingDirectory)'
         CleanTargetFolder: true
     - task: PublishBuildArtifacts@1
