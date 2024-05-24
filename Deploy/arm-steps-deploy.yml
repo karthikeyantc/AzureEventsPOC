@@ -7,7 +7,7 @@ parameters:
   taskOverideParameters: ''
 
 steps:
-- template: arm-resources-steps-deploy.yml
+- template: Deploy/arm-resources-steps-deploy.yml
   parameters:
     name: AzureResourceManagerTemplateDeployment@3
     displayName: 'Deploy Resources to Azure'
