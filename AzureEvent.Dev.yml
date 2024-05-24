@@ -66,5 +66,4 @@ stages:
               taskEnvironmentFilePath: 'd:\a\1\drop\AzureEvent\Resources\azuredeploy.json'
               taskLocation: 'East US'
               taskSubscriptionId: '7f6a8cca-0003-48bf-bc34-52e6710ed352'
-              displayOutputs: ${{ parameters.DisplayOutputs }}
               taskOverideParameters: '-webAppName $(solution)-dev -storageAccountName $(solution)dev -location "East US"'

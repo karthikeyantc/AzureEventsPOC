@@ -19,13 +19,13 @@ steps:
     subscriptionId: ${{ parameters.taskSubscriptionId }}
     overrideParameters: ${{ parameters.taskOverideParameters }}
 
-- task: ARM Outputs@5
-  displayName: 'ARM Outputs'
-  inputs:
-    ConnectedServiceNameARM: ${{ parameters.taskAzureResourceManagerConnection }}
-    ResourceGroupName: ${{ parameters.taskResourceGroupName }}'
-    Prefix: 'ARMOutput_'
-    whenLastDeploymentFailed: 'fail'
+# - task: ARM Outputs@5
+#   displayName: 'ARM Outputs'
+#   inputs:
+#     ConnectedServiceNameARM: ${{ parameters.taskAzureResourceManagerConnection }}
+#     ResourceGroupName: ${{ parameters.taskResourceGroupName }}'
+#     Prefix: 'ARMOutput_'
+#     whenLastDeploymentFailed: 'fail'
 
 - task: AzureRmWebAppDeployment@4
   displayName: 'Deploy Azure Function App'
