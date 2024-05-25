@@ -11,8 +11,8 @@
         "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
         "tagApplicationName": "ReactNetEventFunctions",
         "hostingPlanName": "[replace(resourceGroup().name,'rg', 'asp')]",
-        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]",
-        "eventGridSubscriptionName": "[replace(resourceGroup().name,'rg', 'egSub')]"
+        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]"
+        // "eventGridSubscriptionName": "[replace(resourceGroup().name,'rg', 'egSub')]"
     },
     "resources": [
         {
@@ -134,7 +134,7 @@
         {
             "type": "Microsoft.EventGrid/topics/eventSubscriptions",
             "apiVersion": "2023-06-01-preview",
-            "name": "[concat(variables('eventGridSubscriptionName'), '-EA')]",
+            "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger/','-EA')]",
             "dependsOn": [
                 "delayScript"
             ],
