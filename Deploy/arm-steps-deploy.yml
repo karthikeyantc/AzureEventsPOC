@@ -34,7 +34,7 @@ steps:
     azureSubscription: ${{ parameters.taskSubscriptionId }}
     appType: 'functionApp'
     WebAppName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
-    packageForWindows: '$(Pipeline.Workspace)/**/AzureEvent.Function.zip'
+    packageForWindows: '**/*.zip'
     ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
 
 - template: arm-resources-steps-deploy.yml
