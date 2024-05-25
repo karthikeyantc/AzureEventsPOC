@@ -116,6 +116,22 @@
             }
         },
         {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "delayScript",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
+            ],
+            "properties": {
+                "forceUpdateTag": "1",
+                "azPowerShellVersion": "3.0",
+                "scriptContent": "Start-Sleep -Seconds 60",
+                "timeout": "PT2M",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
+            }
+        },
+        {
             "type": "Microsoft.EventGrid/topics/eventSubscriptions",
             "apiVersion": "2023-06-01-preview",
             "name": "[concat(variables('eventGridSubscriptionName'), '-EventSubcriber-a')]",
