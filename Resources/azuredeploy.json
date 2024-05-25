@@ -123,6 +123,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
             ],
+            "kind": "AzurePowerShell",
             "properties": {
                 "kind": "AzurePowerShell",
                 "azCliVersion": null,
