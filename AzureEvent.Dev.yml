@@ -73,4 +73,4 @@ stages:
               taskEnvironmentFilePath: '$(Pipeline.Workspace)/drop/Resources/azuredeploy.parameters.json'
               taskLocation: 'East US'
               taskSubscriptionId: '7f6a8cca-0003-48bf-bc34-52e6710ed352'
-              taskOverideParameters: '-webAppName $(solution)-dev -storageAccountName $(solution)dev -location "East US"'
+              taskOverideParameters: '-location "East US"'
