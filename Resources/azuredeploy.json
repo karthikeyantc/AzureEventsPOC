@@ -124,6 +124,8 @@
                 "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
             ],
             "properties": {
+                "kind": "AzurePowerShell",
+                "azCliVersion": null,
                 "forceUpdateTag": "1",
                 "azPowerShellVersion": "3.0",
                 "scriptContent": "Start-Sleep -Seconds 60",
