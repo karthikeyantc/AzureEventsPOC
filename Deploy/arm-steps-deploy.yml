@@ -36,3 +36,15 @@ steps:
     WebAppName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
     packageForWindows: '$(Pipeline.Workspace)/**/AzureEvent.Function.zip'
     ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
+
+- template: arm-resources-steps-deploy.yml
+  parameters:
+    name: AzureResourceManagerTemplateDeployment@3
+    displayName: 'Deploy Resources to Azure'
+    azureResourceManagerConnection: ${{ parameters.taskAzureResourceManagerConnection }}
+    resourceGroupName: ${{ parameters.taskResourceGroupName }}
+    file: '$(Pipeline.Workspace)/drop/Resources/azuredeployEventGrid.json'
+    csmParametersFile: ${{ parameters.taskEnvironmentFilePath }}
+    Location: ${{ parameters.taskLocation }}
+    subscriptionId: ${{ parameters.taskSubscriptionId }}
+    overrideParameters: ${{ parameters.taskOverideParameters }}

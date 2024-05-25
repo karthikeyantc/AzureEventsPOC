@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "East US",
+            "type": "String"
+            }
+    },
+    "variables": {
+        "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
+        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]"
+        // "eventGridSubscriptionName": "[replace(resourceGroup().name,'rg', 'egSub')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.EventGrid/topics",
+            "apiVersion": "2023-06-01-preview",
+            "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Basic"
+            },
+            "kind": "Azure",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "minimumTlsVersionAllowed": "1.2",
+                "inputSchema": "EventGridSchema",
+                "publicNetworkAccess": "Enabled",
+                "inboundIpRules": [],
+                "disableLocalAuth": false,
+                "dataResidencyBoundary": "WithinGeopair"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "delayScript",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
+            ],
+            "kind": "AzurePowerShell",
+            "properties": {
+                "kind": "AzurePowerShell",
+                "azCliVersion": null,
+                "forceUpdateTag": "1",
+                "azPowerShellVersion": "3.0",
+                "scriptContent": "Start-Sleep -Seconds 60",
+                "timeout": "PT2M",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
+            }
+        },
+        {
+            "type": "Microsoft.EventGrid/topics/eventSubscriptions",
+            "apiVersion": "2023-06-01-preview",
+            "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger/','-EA')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "delayScript"
+            ],
+            "properties": {
+                "destination": {
+                    "properties": {
+                        "resourceId": "[concat(resourceId('Microsoft.Web/sites',variables('functionAppName')),'/functions/EventGridSub')]",
+                        "maxEventsPerBatch": 1,
+                        "preferredBatchSizeInKilobytes": 64
+                    },
+                    "endpointType": "AzureFunction"
+                },
+                "filter": {
+                    "enableAdvancedFilteringOnArrays": true
+                },
+                "labels": [],
+                "eventDeliverySchema": "EventGridSchema",
+                "retryPolicy": {
+                    "maxDeliveryAttempts": 30,
+                    "eventTimeToLiveInMinutes": 1440
+                }
+            }
+        }
+    ]
+}
