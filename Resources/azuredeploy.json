@@ -134,7 +134,7 @@
         {
             "type": "Microsoft.EventGrid/topics/eventSubscriptions",
             "apiVersion": "2023-06-01-preview",
-            "name": "[concat(variables('eventGridTopicName'), '-APIMTrigger', '-EventSubA')]",
+            "name": "[concat(variables('eventGridSubscriptionName'), '-EA')]",
             "dependsOn": [
                 "delayScript"
             ],
