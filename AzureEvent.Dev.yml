@@ -39,7 +39,6 @@ stages:
         SourceFolder: '$(System.DefaultWorkingDirectory)'
         Contents: '**'
         TargetFolder: '$(build.artifactStagingDirectory)'
-        CleanTargetFolder: true
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
       inputs:
