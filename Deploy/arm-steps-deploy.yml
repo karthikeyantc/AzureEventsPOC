@@ -7,6 +7,7 @@ parameters:
   taskOverideParameters: ''
 
 steps:
+
 - script: |
     echo "Listing Deploy directory:"
     dir "D:\a\1\s\"
@@ -21,7 +22,7 @@ steps:
     displayName: 'Deploy Resources to Azure'
     azureResourceManagerConnection: ${{ parameters.taskAzureResourceManagerConnection }}
     resourceGroupName: ${{ parameters.taskResourceGroupName }}
-    file: 'D:\a\1\s\Resources\azuredeploy.json'
+    file: '$(Pipeline.Workspace)/drop/Resources/azuredeploy.json'
     csmParametersFile: ${{ parameters.taskEnvironmentFilePath }}
     Location: ${{ parameters.taskLocation }}
     subscriptionId: ${{ parameters.taskSubscriptionId }}

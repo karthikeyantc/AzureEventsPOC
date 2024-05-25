@@ -59,11 +59,18 @@ stages:
       runOnce:
         deploy:
           steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'drop'
+              path: '$(Pipeline.Workspace)/drop'
+          - script: |
+              echo "Listing Deploy directory:"
+              dir "$(Pipeline.Workspace)/drop"
           - template: Deploy/arm-steps-deploy.yml
             parameters:
               taskAzureResourceManagerConnection: 'Azure For Students'
               taskResourceGroupName: 'rg-azureevent-dev'
-              taskEnvironmentFilePath: 'D:\a\1\s\Resources\azuredeploy.parameters.json'
+              taskEnvironmentFilePath: '$(Pipeline.Workspace)/drop/Resources/azuredeploy.parameters.json'
               taskLocation: 'East US'
               taskSubscriptionId: '7f6a8cca-0003-48bf-bc34-52e6710ed352'
               taskOverideParameters: '-webAppName $(solution)-dev -storageAccountName $(solution)dev -location "East US"'
