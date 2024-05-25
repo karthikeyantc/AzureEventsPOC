@@ -21,7 +21,7 @@ steps:
     displayName: 'Deploy Resources to Azure'
     azureResourceManagerConnection: ${{ parameters.taskAzureResourceManagerConnection }}
     resourceGroupName: ${{ parameters.taskResourceGroupName }}
-    file: '$(build.artifactStagingDirectory)/drop/Resources/azuredeploy.json'
+    file: 'D:\a\1\a\Resources\azuredeploy.json'
     csmParametersFile: ${{ parameters.taskEnvironmentFilePath }}
     Location: ${{ parameters.taskLocation }}
     subscriptionId: ${{ parameters.taskSubscriptionId }}
