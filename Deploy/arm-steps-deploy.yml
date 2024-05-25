@@ -7,15 +7,6 @@ parameters:
   taskOverideParameters: ''
 
 steps:
-
-- script: |
-    echo "Listing Deploy directory:"
-    dir "D:\a\1\s\"
-  displayName: 'List Deploy directory'
-- script: |
-    echo "Listing Deploy directory:"
-    dir "D:\a\1\a\"
-  displayName: 'List Deploy directory'
 - template: arm-resources-steps-deploy.yml
   parameters:
     name: AzureResourceManagerTemplateDeployment@3

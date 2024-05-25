@@ -63,9 +63,6 @@ stages:
             inputs:
               artifact: 'drop'
               path: '$(Pipeline.Workspace)/drop'
-          - script: |
-              echo "Listing Deploy directory:"
-              dir "$(Pipeline.Workspace)/drop"
           - template: Deploy/arm-steps-deploy.yml
             parameters:
               taskAzureResourceManagerConnection: 'Azure For Students'
