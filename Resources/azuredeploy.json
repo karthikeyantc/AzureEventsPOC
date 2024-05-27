@@ -133,11 +133,11 @@
                         },
                         {
                             "name": "TopicEndpoint",
-                            "value": "[reference(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger')), '2023-06-01-preview').properties.endpoint]"
+                            "value": "[reference(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger')), '2023-06-01-preview').endpoint]"
                         },
                         {
                             "name": "TopicKey",
-                            "value": "[reference(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger')), '2023-06-01-preview').properties.accessKeys.key1]"
+                            "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger')), '2023-06-01-preview').key1]"
                         }
                     ]
                 },
