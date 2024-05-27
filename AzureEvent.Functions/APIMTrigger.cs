@@ -32,8 +32,10 @@ namespace AzureEvent.Function
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
-            string topicEndpoint = "https://reactneteventgrid.ukwest-1.eventgrid.azure.net/api/events"; // replace with your Event Grid Topic endpoint
-            string topicKey = "fQd2E0TuDl4XaRkemjXu6gRTeix1YsX+nAZEGMhME24="; // replace with your Event Grid Topic key
+            // string topicEndpoint = "https://egtopic-azureevent-dev-apimtrigger.eastus-1.eventgrid.azure.net/api/events"; // replace with your Event Grid Topic endpoint
+            // string topicKey = "jl9gOqT3ph1GznkhRXwgeJBONj3Js03IiAZEGBD1hwQ="; // replace with your Event Grid Topic key
+            string topicEndpoint = Environment.GetEnvironmentVariable("TopicEndpoint");
+            string topicKey = Environment.GetEnvironmentVariable("TopicKey");
 
             TopicCredentials topicCredentials = new TopicCredentials(topicKey);
             EventGridClient client = new EventGridClient(topicCredentials);

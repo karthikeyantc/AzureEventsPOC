@@ -13,54 +13,34 @@
         // "eventGridSubscriptionName": "[replace(resourceGroup().name,'rg', 'egSub')]"
     },
     "resources": [
-        {
-            "type": "Microsoft.EventGrid/topics",
-            "apiVersion": "2023-06-01-preview",
-            "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger')]",
-            "location": "[parameters('location')]",
-            "sku": {
-                "name": "Basic"
-            },
-            "kind": "Azure",
-            "identity": {
-                "type": "None"
-            },
-            "properties": {
-                "minimumTlsVersionAllowed": "1.2",
-                "inputSchema": "EventGridSchema",
-                "publicNetworkAccess": "Enabled",
-                "inboundIpRules": [],
-                "disableLocalAuth": false,
-                "dataResidencyBoundary": "WithinGeopair"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deploymentScripts",
-            "apiVersion": "2020-10-01",
-            "name": "delayScript",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
-            ],
-            "kind": "AzurePowerShell",
-            "properties": {
-                "kind": "AzurePowerShell",
-                "azCliVersion": null,
-                "forceUpdateTag": "1",
-                "azPowerShellVersion": "3.0",
-                "scriptContent": "Start-Sleep -Seconds 60",
-                "timeout": "PT2M",
-                "cleanupPreference": "OnSuccess",
-                "retentionInterval": "P1D"
-            }
-        },
+        
+        // {
+        //     "type": "Microsoft.Resources/deploymentScripts",
+        //     "apiVersion": "2020-10-01",
+        //     "name": "delayScript",
+        //     "location": "[parameters('location')]",
+        //     "dependsOn": [
+        //         "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
+        //     ],
+        //     "kind": "AzurePowerShell",
+        //     "properties": {
+        //         "kind": "AzurePowerShell",
+        //         "azCliVersion": null,
+        //         "forceUpdateTag": "1",
+        //         "azPowerShellVersion": "3.0",
+        //         "scriptContent": "Start-Sleep -Seconds 60",
+        //         "timeout": "PT2M",
+        //         "cleanupPreference": "OnSuccess",
+        //         "retentionInterval": "P1D"
+        //     }
+        // },
         {
             "type": "Microsoft.EventGrid/topics/eventSubscriptions",
             "apiVersion": "2023-06-01-preview",
             "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger/','-EA')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "delayScript"
+                "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
             ],
             "properties": {
                 "destination": {

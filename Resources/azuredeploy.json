@@ -12,9 +12,31 @@
         "tagApplicationName": "ReactNetEventFunctions",
         "hostingPlanName": "[replace(resourceGroup().name,'rg', 'asp')]",
         "storageAccountName": "azureeventsa",
-        "appInsightsName": "[replace(resourceGroup().name,'rg', 'appinsights')]"
+        "appInsightsName": "[replace(resourceGroup().name,'rg', 'appinsights')]",
+        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]"
     },
     "resources": [
+        {
+            "type": "Microsoft.EventGrid/topics",
+            "apiVersion": "2023-06-01-preview",
+            "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Basic"
+            },
+            "kind": "Azure",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "minimumTlsVersionAllowed": "1.2",
+                "inputSchema": "EventGridSchema",
+                "publicNetworkAccess": "Enabled",
+                "inboundIpRules": [],
+                "disableLocalAuth": false,
+                "dataResidencyBoundary": "WithinGeopair"
+            }
+        },
         {
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
@@ -108,6 +130,14 @@
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
                             "value": "~4"
+                        },
+                        {
+                            "name": "TopicEndpoint",
+                            "value": "[reference(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger')), '2023-06-01-preview').properties.endpoint]"
+                        },
+                        {
+                            "name": "TopicKey",
+                            "value": "[reference(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger')), '2023-06-01-preview').properties.accessKeys.key1]"
                         }
                     ]
                 },
