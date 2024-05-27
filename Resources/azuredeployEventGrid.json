@@ -5,18 +5,14 @@
         "location": {
             "defaultValue": "East US",
             "type": "String"
-            }
+        }
     },
     "variables": {
         "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
-        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]",
-        "subscriptionId": "[subscription().subscriptionId]",
-        "resourceGroupName": "[resourceGroup().name]",
-        "eventGridTopicsProvider": "Microsoft.EventGrid/topics"
-        // "eventGridSubscriptionName": "[replace(resourceGroup().name,'rg', 'egSub')]"
+        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]"
     },
     "resources": [
-        
+
         // {
         //     "type": "Microsoft.Resources/deploymentScripts",
         //     "apiVersion": "2020-10-01",
@@ -42,9 +38,6 @@
             "apiVersion": "2023-06-01-preview",
             "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger/','-EA')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "/subscriptions/7f6a8cca-0003-48bf-bc34-52e6710ed352/resourceGroups/rg-azureevent-dev/providers/Microsoft.EventGrid/topics/egTopic-azureevent-dev-APIMTrigger"
-            ],
             "properties": {
                 "destination": {
                     "properties": {
@@ -63,7 +56,8 @@
                     "maxDeliveryAttempts": 30,
                     "eventTimeToLiveInMinutes": 1440
                 }
-            }
+            },
+            "scope": "/subscriptions/7f6a8cca-0003-48bf-bc34-52e6710ed352/resourceGroups/rg-azureevent-dev/providers/Microsoft.EventGrid/topics/egTopic-azureevent-dev-APIMTrigger"
         }
     ]
 }
