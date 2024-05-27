@@ -27,29 +27,29 @@ steps:
 #     Prefix: 'ARMOutput_'
 #     whenLastDeploymentFailed: 'fail'
 
-# - task: AzureRmWebAppDeployment@4
-#   displayName: 'Deploy Azure Function App'
-#   inputs:
-#     ConnectionType: 'AzureRM'
-#     azureSubscription: ${{ parameters.taskSubscriptionId }}
-#     appType: 'functionApp'
-#     WebAppName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
-#     packageForWindows: '**/*.zip'
-#     ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
-- task: AzureFunctionApp@1
-  displayName: 'Azure Function App Deploy'
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Deploy Azure Function App'
   inputs:
-    ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
+    ConnectionType: 'AzureRM'
     azureSubscription: ${{ parameters.taskSubscriptionId }}
-    appType: functionApp
-    appName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
-    package: '$(Pipeline.Workspace)/drop/AzureEvent.Function.zip'
-    deploymentMethod: 'auto'
-    RuntimeStack: 'dotnet'
-    RuntimeVersion: '6.0'
-    StartupCommand: 'AzureEvent.Function.dll'
-    ScriptType: 'CSharp'
-    ConfigurationSettings: '-FUNCTIONS_WORKER_RUNTIME dotnet'
+    appType: 'functionApp'
+    WebAppName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
+    packageForWindows: '**/*.zip'
+    ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
+# - task: AzureFunctionApp@1
+#   displayName: 'Azure Function App Deploy'
+#   inputs:
+#     ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
+#     azureSubscription: ${{ parameters.taskSubscriptionId }}
+#     appType: functionApp
+#     appName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
+#     package: '$(Pipeline.Workspace)/drop/AzureEvent.Function.zip'
+#     deploymentMethod: 'auto'
+#     RuntimeStack: 'dotnet'
+#     RuntimeVersion: '6.0'
+#     StartupCommand: 'AzureEvent.Function.dll'
+#     ScriptType: 'CSharp'
+#     ConfigurationSettings: '-FUNCTIONS_WORKER_RUNTIME dotnet'
 
 - template: arm-resources-steps-deploy.yml
   parameters:
