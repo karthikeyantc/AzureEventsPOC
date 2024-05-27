@@ -1,4 +1,4 @@
-trigger: none
+trigger: main
 
 pool:
   vmImage: 'windows-latest'
@@ -26,13 +26,27 @@ stages:
       inputs:
         command: 'restore'
         restoreSolution: '**/*.sln'
-    - task: VSBuild@1
+    # - task: VSBuild@1
+    #   displayName: 'Build solution'
+    #   inputs:
+    #     solution: '**/*.sln'
+    #     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\AzureEvent.Function.zip" /p:DeployIisAppPath="Default Web Site"'
+    #     platform: '$(buildPlatform)'
+    #     configuration: '$(buildConfiguration)'
+    - task: DotNetCoreCLI@2
       displayName: 'Build solution'
       inputs:
-        solution: '**/*.sln'
-        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\AzureEvent.Function.zip" /p:DeployIisAppPath="Default Web Site"'
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '--no-restore --configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '**/*.csproj'
+        arguments: '--no-build --configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
+        zipAfterPublish: true
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactStagingDirectory)'
       inputs:
