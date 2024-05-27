@@ -92,6 +92,10 @@
                             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountName'), '2019-06-01').keys[0].value)]"
                         },
                         {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
                             "value": "dotnet"
                         },
