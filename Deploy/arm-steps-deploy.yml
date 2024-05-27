@@ -38,7 +38,7 @@ steps:
     azureSubscription: ${{ parameters.taskSubscriptionId }}
     appType: 'functionApp'
     WebAppName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
-    packageForWindows: '**/*.zip'
+    package: '**/*.zip'
     ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
 # - task: AzureFunctionApp@1
 #   displayName: 'Azure Function App Deploy'
