@@ -39,6 +39,7 @@ steps:
 - task: AzureFunctionApp@1
   displayName: 'Azure Function App Deploy'
   inputs:
+    ConnectedServiceName: ${{ parameters.taskAzureResourceManagerConnection }}
     azureSubscription: ${{ parameters.taskSubscriptionId }}
     appType: functionApp
     appName: ${{ replace(parameters.taskResourceGroupName, 'rg', 'func')}}
