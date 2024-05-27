@@ -10,7 +10,9 @@
     "variables": {
         "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
         "tagApplicationName": "ReactNetEventFunctions",
-        "hostingPlanName": "[replace(resourceGroup().name,'rg', 'asp')]"
+        "hostingPlanName": "[replace(resourceGroup().name,'rg', 'asp')]",
+        "storageAccountName": "[replace(resourceGroup().name,'rg', 'sa')]",
+        "appInsightsName": "[replace(resourceGroup().name,'rg', 'appinsights')]"
     },
     "resources": [
         {
@@ -32,6 +34,33 @@
             }
         },
         {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2023-01-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02-preview",
+            "name": "[variables('appInsightsName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('functionAppName')))]": "Resource"
+            },
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2022-09-01",
             "name": "[variables('functionAppName')]",
@@ -41,7 +70,9 @@
             },
             "kind": "functionapp",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
             ],
             "properties": {
                 "enabled": true,
@@ -54,6 +85,10 @@
                     "functionAppScaleLimit": 200,
                     "minimumElasticInstanceCount": 0,
                     "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountName'), '2019-06-01').keys[0].value)]"
+                        },
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
                             "value": "dotnet"
