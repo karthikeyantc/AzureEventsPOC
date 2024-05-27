@@ -50,11 +50,12 @@ steps:
     StartupCommand: 'AzureEvent.Function.dll'
     ScriptType: 'CSharp'
     ConfigurationSettings: '-FUNCTIONS_WORKER_RUNTIME dotnet'
+  dependsOn: AzureResourceManagerTemplateDeployment@3
 
 - template: arm-resources-steps-deploy.yml
   parameters:
     name: AzureResourceManagerTemplateDeployment@3
-    displayName: 'Deploy Resources to Azure'
+    displayName: 'Deploy Event Grid Subscriptions to Azure'
     azureResourceManagerConnection: ${{ parameters.taskAzureResourceManagerConnection }}
     resourceGroupName: ${{ parameters.taskResourceGroupName }}
     file: '$(Pipeline.Workspace)/drop/Resources/azuredeployEventGrid.json'
@@ -62,3 +63,4 @@ steps:
     Location: ${{ parameters.taskLocation }}
     subscriptionId: ${{ parameters.taskSubscriptionId }}
     overrideParameters: ${{ parameters.taskOverideParameters }}
+  dependsOn: AzureFunctionApp@1
