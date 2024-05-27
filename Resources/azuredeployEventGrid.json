@@ -56,8 +56,7 @@
                     "maxDeliveryAttempts": 30,
                     "eventTimeToLiveInMinutes": 1440
                 }
-            },
-            "scope": "/subscriptions/7f6a8cca-0003-48bf-bc34-52e6710ed352/resourceGroups/rg-azureevent-dev/providers/Microsoft.EventGrid/topics/egTopic-azureevent-dev-APIMTrigger"
+            }
         }
     ]
 }
