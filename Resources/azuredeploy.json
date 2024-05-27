@@ -11,7 +11,7 @@
         "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
         "tagApplicationName": "ReactNetEventFunctions",
         "hostingPlanName": "[replace(resourceGroup().name,'rg', 'asp')]",
-        "storageAccountName": "[replace(resourceGroup().name,'rg', 'sa')]",
+        "storageAccountName": "azureeventsa",
         "appInsightsName": "[replace(resourceGroup().name,'rg', 'appinsights')]"
     },
     "resources": [
