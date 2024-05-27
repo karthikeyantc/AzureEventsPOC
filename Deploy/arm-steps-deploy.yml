@@ -50,7 +50,6 @@ steps:
     StartupCommand: 'AzureEvent.Function.dll'
     ScriptType: 'CSharp'
     ConfigurationSettings: '-FUNCTIONS_WORKER_RUNTIME dotnet'
-  dependsOn: AzureResourceManagerTemplateDeployment@3
 
 - template: arm-resources-steps-deploy.yml
   parameters:
@@ -63,4 +62,3 @@ steps:
     Location: ${{ parameters.taskLocation }}
     subscriptionId: ${{ parameters.taskSubscriptionId }}
     overrideParameters: ${{ parameters.taskOverideParameters }}
-  dependsOn: AzureFunctionApp@1
