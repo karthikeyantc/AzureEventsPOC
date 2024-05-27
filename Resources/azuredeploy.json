@@ -44,7 +44,9 @@
             },
             "kind": "StorageV2",
             "properties": {
-                "accessTier": "Hot"
+                "accessTier": "Hot",
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2"
             }
         },
         {
