@@ -27,10 +27,6 @@ steps:
 #     ResourceGroupName: ${{ parameters.taskResourceGroupName }}'
 #     Prefix: 'ARMOutput_'
 #     whenLastDeploymentFailed: 'fail'
-- task: DownloadPipelineArtifact@2
-  inputs:
-    artifact: 'drop'
-    path: '$(Pipeline.Workspace)/drop'
 # - task: AzureRmWebAppDeployment@4
 #   displayName: 'Deploy Azure Function App'
   # inputs:
