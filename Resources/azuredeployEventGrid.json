@@ -43,7 +43,7 @@
             "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger/','-EA')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId(variables('subscriptionId'),variables('resourceGroupName'),variables('eventGridTopicsProvider'), concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
+                "/subscriptions/7f6a8cca-0003-48bf-bc34-52e6710ed352/resourceGroups/rg-azureevent-dev/providers/Microsoft.EventGrid/topics/egTopic-azureevent-dev-APIMTrigger"
             ],
             "properties": {
                 "destination": {
