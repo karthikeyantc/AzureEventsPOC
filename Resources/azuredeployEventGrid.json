@@ -9,7 +9,10 @@
     },
     "variables": {
         "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
-        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]"
+        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]",
+        "subscriptionId": "[subscription().subscriptionId]",
+        "resourceGroupName": "[resourceGroup().name]",
+        "eventGridTopicsProvider": "Microsoft.EventGrid/topics"
         // "eventGridSubscriptionName": "[replace(resourceGroup().name,'rg', 'egSub')]"
     },
     "resources": [
@@ -40,7 +43,7 @@
             "name": "[concat(variables('eventGridTopicName'),'-APIMTrigger/','-EA')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
+                "[resourceId(variables('subscriptionId'),variables('resourceGroupName'),variables('eventGridTopicsProvider'), concat(variables('eventGridTopicName'),'-APIMTrigger'))]"
             ],
             "properties": {
                 "destination": {
