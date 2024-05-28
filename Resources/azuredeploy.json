@@ -13,7 +13,9 @@
         "hostingPlanName": "[replace(resourceGroup().name,'rg', 'asp')]",
         "storageAccountName": "azureeventsa",
         "appInsightsName": "[replace(resourceGroup().name,'rg', 'appinsights')]",
-        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]"
+        "eventGridTopicName": "[replace(resourceGroup().name,'rg', 'egTopic')]",
+        "apiManagementName": "[replace(resourceGroup().name,'rg', 'apim')]",
+        "apiSchemaName": "[uniqueString('eventsApiSchema')]"
     },
     "resources": [
         {
@@ -166,6 +168,345 @@
             "properties": {
                 "siteName": "[variables('functionAppName')]",
                 "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[variables('apiManagementName')]",
+            "location": "East US",
+            "sku": {
+                "name": "Consumption",
+                "capacity": 0
+            },
+            "properties": {
+                "publisherEmail": "karthikeyantc22@gmail.com",
+                "publisherName": "Karthikeyan",
+                "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
+                "hostnameConfigurations": [
+                    {
+                        "type": "Proxy",
+                        "hostName": "[concat(variables('apiManagementName'), '.azure-api.net')]",
+                        "negotiateClientCertificate": false,
+                        "defaultSslBinding": true,
+                        "certificateSource": "BuiltIn"
+                    }
+                ],
+                "customProperties": {
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+                },
+                "virtualNetworkType": "None",
+                "disableGateway": false,
+                "natGatewayState": "Disabled",
+                "apiVersionConstraint": {},
+                "publicNetworkAccess": "Enabled",
+                "legacyPortalStatus": "Enabled",
+                "developerPortalStatus": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "Events",
+                "apiRevision": "1",
+                "subscriptionRequired": false,
+                "path": "api",
+                "protocols": [
+                    "https"
+                ],
+                "authenticationSettings": {
+                    "oAuth2AuthenticationSettings": [],
+                    "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                    "header": "Ocp-Apim-Subscription-Key",
+                    "query": "subscription-key"
+                },
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/loggers",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/', variables('appInsightsName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "loggerType": "applicationInsights",
+                "credentials": {
+                    "instrumentationKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
+                },
+                "isBuffered": true,
+                "resourceId": "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/namedValues",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/appInsightsKey')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]",
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/policies",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - Only the <forward-request> policy element can appear within the <backend> section element.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n-->\r\n<policies>\r\n  <inbound></inbound>\r\n  <backend>\r\n    <forward-request />\r\n  </backend>\r\n  <outbound></outbound>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(variables('apiManagementName'), '/appinsights-instrumentation-key')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "appinsights-instrumentation-key",
+                "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]",
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/subscriptions",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/master')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "scope": "[concat(resourceId('Microsoft.ApiManagement/service', variables('apiManagementName')), '/')]",
+                "displayName": "Built-in all-access subscription",
+                "state": "active",
+                "allowTracing": false
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/schemas",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/', variables('apiSchemaName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "contentType": "application/vnd.oai.openapi.components+json",
+                "document": {}
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/send-trigger')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events',variables('apiSchemaName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "Send Trigger",
+                "method": "POST",
+                "urlTemplate": "/APIMTrigger",
+                "templateParameters": [],
+                "description": "API to send a trigger with a JSON body ",
+                "request": {
+                    "queryParameters": [],
+                    "headers": [],
+                    "representations": [
+                        {
+                            "contentType": "application/json",
+                            "examples": {
+                                "default": {
+                                    "value": {
+                                        "id": 0,
+                                        "name": "string"
+                                    }
+                                }
+                            },
+                            "schemaId": "[variables('apiSchemaName')]",
+                            "typeName": "Request Body"
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "description": "Returns a success response",
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/policies",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"https://func-azureevent-dev.azurewebsites.net/api\" />\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/wikis",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "documents": []
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/diagnostics",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/applicationinsights')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/loggers', variables('apiManagementName'), 'appinsights-azureevent-dev')]"
+            ],
+            "properties": {
+                "alwaysLog": "allErrors",
+                "httpCorrelationProtocol": "Legacy",
+                "logClientIp": true,
+                "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', variables('apiManagementName'), 'appinsights-azureevent-dev')]",
+                "sampling": {
+                    "samplingType": "fixed",
+                    "percentage": 100
+                },
+                "frontend": {
+                    "request": {
+                        "dataMasking": {
+                            "queryParams": [
+                                {
+                                    "value": "*",
+                                    "mode": "Hide"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "backend": {
+                    "request": {
+                        "dataMasking": {
+                            "queryParams": [
+                                {
+                                    "value": "*",
+                                    "mode": "Hide"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/diagnostics/loggers",
+            "apiVersion": "2018-01-01",
+            "name": "[concat(variables('apiManagementName'), '/applicationinsights/appinsights-azureevent-dev')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/diagnostics', variables('apiManagementName'), 'applicationinsights')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/diagnostics",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/applicationinsights')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/loggers', variables('apiManagementName'), 'appinsights-azureevent-dev')]"
+            ],
+            "properties": {
+                "alwaysLog": "allErrors",
+                "httpCorrelationProtocol": "Legacy",
+                "verbosity": "information",
+                "logClientIp": true,
+                "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', variables('apiManagementName'), 'appinsights-azureevent-dev')]",
+                "sampling": {
+                    "samplingType": "fixed",
+                    "percentage": 100
+                },
+                "frontend": {
+                    "request": {
+                        "headers": [],
+                        "body": {
+                            "bytes": 0
+                        }
+                    },
+                    "response": {
+                        "headers": [],
+                        "body": {
+                            "bytes": 0
+                        }
+                    }
+                },
+                "backend": {
+                    "request": {
+                        "headers": [],
+                        "body": {
+                            "bytes": 0
+                        }
+                    },
+                    "response": {
+                        "headers": [],
+                        "body": {
+                            "bytes": 0
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/diagnostics/loggers",
+            "apiVersion": "2018-01-01",
+            "name": "[concat(variables('apiManagementName'), '/Events/applicationinsights/appinsights-azureevent-dev')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/diagnostics', variables('apiManagementName'), 'Events', 'applicationinsights')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/send-trigger/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('apiManagementName'), 'Events', 'send-trigger')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"https://func-azureevent-dev.azurewebsites.net/api\" />\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
             }
         }
     ]
