@@ -5,7 +5,7 @@
         "location": {
             "defaultValue": "East US",
             "type": "String"
-            }
+        }
     },
     "variables": {
         "functionAppName": "[replace(resourceGroup().name,'rg', 'func')]",
@@ -144,7 +144,6 @@
                 "scmSiteAlsoStopped": false,
                 "clientAffinityEnabled": false,
                 "clientCertEnabled": false,
-                "clientCertMode": "Required",
                 "hostNamesDisabled": false,
                 "customDomainVerificationId": "0E9909027C9AE029E9C7406EE0253AA1D7D87FD134B2019D45F699A8BF59096F",
                 "containerSize": 1536,

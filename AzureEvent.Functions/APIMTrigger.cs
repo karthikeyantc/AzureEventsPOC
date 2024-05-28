@@ -31,9 +31,6 @@ namespace AzureEvent.Function
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            // string topicEndpoint = "https://egtopic-azureevent-dev-apimtrigger.eastus-1.eventgrid.azure.net/api/events"; // replace with your Event Grid Topic endpoint
-            // string topicKey = "jl9gOqT3ph1GznkhRXwgeJBONj3Js03IiAZEGBD1hwQ="; // replace with your Event Grid Topic key
             string topicEndpoint = Environment.GetEnvironmentVariable("TopicEndpoint");
             string topicKey = Environment.GetEnvironmentVariable("TopicKey");
 
