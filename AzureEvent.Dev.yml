@@ -1,85 +1,78 @@
 trigger: none
 pool:
-  vmImage: 'windows-latest'
+    vmImage: "windows-latest"
 
 parameters:
-- name: DisplayOutputs
-  displayName: Display Outputs?
-  type: boolean
-  default: true
+    - name: DisplayOutputs
+      displayName: Display Outputs?
+      type: boolean
+      default: true
 
 variables:
-  solution: 'AzureEvent'
-  buildConfiguration: 'Release'
-  buildPlatform: 'Any CPU'
-  
+    solution: "AzureEvent"
+    buildConfiguration: "Release"
+    buildPlatform: "Any CPU"
+
 stages:
-- stage: Build
-  displayName: Build
-  jobs:
-  - job: Build
-    displayName: 'Build'
-    steps:
-    - task: NugetToolInstaller@1
-    - task: NugetCommand@2
-      inputs:
-        command: 'restore'
-        restoreSolution: '**/*.sln'
-    # - task: VSBuild@1
-    #   displayName: 'Build solution'
-    #   inputs:
-    #     solution: '**/*.sln'
-    #     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\AzureEvent.Function.zip" /p:DeployIisAppPath="Default Web Site"'
-    #     platform: '$(buildPlatform)'
-    #     configuration: '$(buildConfiguration)'
-    - task: DotNetCoreCLI@2
-      displayName: 'Build solution'
-      inputs:
-        command: 'build'
-        projects: '**/*.csproj'
-        arguments: '--no-restore --configuration $(buildConfiguration)'
-    - task: DotNetCoreCLI@2
-      displayName: 'Publish'
-      inputs:
-        command: 'publish'
-        publishWebProjects: false
-        projects: '**/*.csproj'
-        arguments: '--no-build --configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
-        zipAfterPublish: true
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(build.artifactStagingDirectory)'
-      inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: '**'
-        TargetFolder: '$(build.artifactStagingDirectory)'
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-        PathtoPublish: '$(build.artifactStagingDirectory)'
-        ArtifactName: 'drop'
-        # publishLocation: 'Container'
-        condition: succeededOrFailed()
-- stage: Deploy
-  displayName: Deploy
-  dependsOn: Build
-  condition: 'succeeded(''Build'')'
-  jobs:
-  - deployment: Deploy
-    displayName: 'Deploy'
-    environment: 'AzureEvent-Dev'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifact: 'drop'
-              path: '$(Pipeline.Workspace)/drop'
-          - template: Deploy/arm-steps-deploy.yml
-            parameters:
-              taskAzureResourceManagerConnection: 'Azure For Students'
-              taskResourceGroupName: 'rg-azureevent-dev'
-              taskEnvironmentFilePath: '$(Pipeline.Workspace)/drop/Resources/azuredeploy.parameters.json'
-              taskLocation: 'East US'
-              taskSubscriptionId: '7f6a8cca-0003-48bf-bc34-52e6710ed352'
-              taskOverideParameters: '-location "East US"'
+    - stage: Build
+      displayName: Build
+      jobs:
+          - job: Build
+            displayName: "Build"
+            steps:
+                - task: NugetToolInstaller@1
+                - task: NugetCommand@2
+                  inputs:
+                      command: "restore"
+                      restoreSolution: "**/*.sln"
+                - task: DotNetCoreCLI@2
+                  displayName: "Build solution"
+                  inputs:
+                      command: "build"
+                      projects: "**/*.csproj"
+                      arguments: "--no-restore --configuration $(buildConfiguration)"
+                - task: DotNetCoreCLI@2
+                  displayName: "Publish"
+                  inputs:
+                      command: "publish"
+                      publishWebProjects: false
+                      projects: "**/*.csproj"
+                      arguments: "--no-build --configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)"
+                      zipAfterPublish: true
+                - task: CopyFiles@2
+                  displayName: "Copy Files to: $(build.artifactStagingDirectory)"
+                  inputs:
+                      SourceFolder: "$(System.DefaultWorkingDirectory)"
+                      Contents: "**"
+                      TargetFolder: "$(build.artifactStagingDirectory)"
+                - task: PublishBuildArtifacts@1
+                  displayName: "Publish Artifact: drop"
+                  inputs:
+                      PathtoPublish: "$(build.artifactStagingDirectory)"
+                      ArtifactName: "drop"
+                      # publishLocation: 'Container'
+                      condition: succeededOrFailed()
+    - stage: Deploy
+      displayName: Deploy
+      dependsOn: Build
+      condition: "succeeded('Build')"
+      jobs:
+          - deployment: Deploy
+            displayName: "Deploy"
+            environment: "AzureEvent-Dev"
+            strategy:
+                runOnce:
+                    deploy:
+                        steps:
+                            - task: DownloadPipelineArtifact@2
+                              inputs:
+                                  artifact: "drop"
+                                  path: "$(Pipeline.Workspace)/drop"
+                            - template: Deploy/arm-steps-deploy.yml
+                              parameters:
+                                  taskAzureResourceManagerConnection: "Azure For Students"
+                                  taskResourceGroupName: "rg-azureevent-dev"
+                                  taskEnvironmentFilePath: "$(Pipeline.Workspace)/drop/Resources/ResourcesDeploy.parameters.json"
+                                  taskLocation: "East US"
+                                  taskSubscriptionId: "7f6a8cca-0003-48bf-bc34-52e6710ed352"
+                                  taskOverideParameters: '-location "East US"'
