@@ -31,8 +31,8 @@ namespace AzureEvent.Function
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
-            string topicEndpoint = Environment.GetEnvironmentVariable("TopicEndpoint");
-            string topicKey = Environment.GetEnvironmentVariable("TopicKey");
+            string topicEndpoint = Environment.GetEnvironmentVariable($"TopicEndpoint{data?.topic}");
+            string topicKey = Environment.GetEnvironmentVariable($"TopicKey{data?.topic}");
 
             TopicCredentials topicCredentials = new TopicCredentials(topicKey);
             EventGridClient client = new EventGridClient(topicCredentials);
