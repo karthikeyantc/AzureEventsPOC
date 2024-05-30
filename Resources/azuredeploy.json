@@ -156,12 +156,20 @@
                             "value": "~4"
                         },
                         {
+                            "name": "TopicName1",
+                            "value": "[concat(variables('eventGridTopic1Name'),'-APIMTrigger')]"
+                        },
+                        {
                             "name": "TopicEndpoint1",
                             "value": "[reference(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopic1Name'),'-APIMTrigger')), '2023-06-01-preview').endpoint]"
                         },
                         {
                             "name": "TopicKey1",
                             "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', concat(variables('eventGridTopic1Name'),'-APIMTrigger')), '2023-06-01-preview').key1]"
+                        },
+                        {
+                            "name": "TopicName2",
+                            "value": "[concat(variables('eventGridTopic2Name'),'-APIMTrigger')]"
                         },
                         {
                             "name": "TopicEndpoint2",
@@ -358,6 +366,12 @@
                     {
                         "statusCode": 200,
                         "description": "Returns a success response",
+                        "representations": [],
+                        "headers": []
+                    },
+                    {
+                        "statusCode": 400,
+                        "description": "Bad Request",
                         "representations": [],
                         "headers": []
                     }

@@ -20,38 +20,57 @@ namespace AzureEvent.Function
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-            string topicEndpoint = Environment.GetEnvironmentVariable($"TopicEndpoint{data?.topic}");
-            string topicKey = Environment.GetEnvironmentVariable($"TopicKey{data?.topic}");
-
-            TopicCredentials topicCredentials = new TopicCredentials(topicKey);
-            EventGridClient client = new EventGridClient(topicCredentials);
-
-            List<EventGridEvent> events = new()
+            try
             {
-                new() {
-                    Id = Guid.NewGuid().ToString(),
-                    EventType = "AzureEvent.APIMTrigger.EventPublished", // replace with your event type
-                    Data = name,
-                    EventTime = DateTime.Now,
-                    Subject = "New event from "+ name, // replace with your subject
-                    DataVersion = "1.0"
+                log.LogInformation("C# HTTP trigger function processed a request.");
+
+                string name = req.Query["name"];
+
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                name = name ?? data?.name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    return new BadRequestObjectResult("Please pass a name on the query string or in the request body");
                 }
-            };
+                if (data?.topic == null)
+                {
+                    return new BadRequestObjectResult("Please pass a topic on the query string or in the request body");
+                }
+                if (data?.topic > 2 || data?.topic < 1)
+                {
+                    return new BadRequestObjectResult("Invalid topic number");
+                }
 
-            await client.PublishEventsAsync(new Uri(topicEndpoint).Host, events);
+                string topicEndpoint = Environment.GetEnvironmentVariable($"TopicEndpoint{data?.topic}");
+                string topicKey = Environment.GetEnvironmentVariable($"TopicKey{data?.topic}");
+                string topicName = Environment.GetEnvironmentVariable($"TopicName{data?.topic}");
 
-            return new OkObjectResult(responseMessage);
+                TopicCredentials topicCredentials = new TopicCredentials(topicKey);
+                EventGridClient client = new EventGridClient(topicCredentials);
+
+                List<EventGridEvent> events = new()
+                {
+                    new() {
+                        Id = Guid.NewGuid().ToString(),
+                        EventType = "AzureEvent.APIMTrigger.EventPublished", // replace with your event type
+                        Data = name,
+                        EventTime = DateTime.Now,
+                        Subject = "New event from "+ name, // replace with your subject
+                        DataVersion = "1.0"
+                    }
+                };
+
+                await client.PublishEventsAsync(new Uri(topicEndpoint).Host, events);
+                string responseMessage = string.IsNullOrEmpty(name)
+                    ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
+                    : $"Hello, {name}. This HTTP triggered function executed successfully and published an event to {topicName} topic.";
+                return new OkObjectResult(responseMessage);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
         }
     }
 }
