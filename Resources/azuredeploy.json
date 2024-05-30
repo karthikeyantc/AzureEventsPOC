@@ -344,7 +344,8 @@
                                 "default": {
                                     "value": {
                                         "id": 0,
-                                        "name": "string"
+                                        "name": "string",
+                                        "topic": 1
                                     }
                                 }
                             },
