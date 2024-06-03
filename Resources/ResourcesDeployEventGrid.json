@@ -12,7 +12,8 @@
         "eventGridTopic1Name": "[replace(resourceGroup().name,'rg', 'egTopic')]",
         "eventGridTopic2Name": "[replace(resourceGroup().name,'rg', 'fxTopic')]",
         "eventGridDomainName": "[replace(resourceGroup().name,'rg', 'egportal')]",
-        "eventGridDomainTopic1Name": "ASystem"
+        "eventGridDomainTopic1Name": "ASystem",
+        "eventGridDomainTopic2Name": "BSystem"
     },
     "resources": [
         {
@@ -93,7 +94,7 @@
         {
             "type": "Microsoft.EventGrid/domains/topics/eventSubscriptions",
             "apiVersion": "2023-06-01-preview",
-            "name": "[concat(variables('eventGridDomainName'),'/',variables('eventGridDomainTopic1Name'),'/egConsume2')]",
+            "name": "[concat(variables('eventGridDomainName'),'/',variables('eventGridDomainTopic2Name'),'/egConsume2')]",
             "location": "[parameters('location')]",
             "properties": {
                 "destination": {

@@ -12,7 +12,7 @@ namespace AzureEvent.Functions
         public string id { get; set; } = Guid.NewGuid().ToString();
         public string subject { get; set; } = "EventGridModel";
         public string eventType { get; set; } = "Azure.Sdk.Sample";
-        public JToken data { get; set; }
+        public object data { get; set; }
         public string dataVersion { get; set; } = "1.0";
         public DateTimeOffset eventTime { get; set; } = DateTimeOffset.UtcNow;
 
