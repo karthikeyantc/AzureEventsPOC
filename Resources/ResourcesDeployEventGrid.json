@@ -68,12 +68,37 @@
         {
             "type": "Microsoft.EventGrid/domains/topics/eventSubscriptions",
             "apiVersion": "2023-06-01-preview",
-            "name": "[concat(variables('eventGridDomainName'),'/',variables('eventGridDomainTopic1Name'),'/egConsume')]",
+            "name": "[concat(variables('eventGridDomainName'),'/',variables('eventGridDomainTopic1Name'),'/egConsume1')]",
             "location": "[parameters('location')]",
             "properties": {
                 "destination": {
                     "properties": {
                         "resourceId": "[concat(resourceId('Microsoft.Web/sites',variables('functionAppName')),'/functions/ASystemConsumer')]",
+                        "maxEventsPerBatch": 1,
+                        "preferredBatchSizeInKilobytes": 64
+                    },
+                    "endpointType": "AzureFunction"
+                },
+                "filter": {
+                    "enableAdvancedFilteringOnArrays": true
+                },
+                "labels": [],
+                "eventDeliverySchema": "EventGridSchema",
+                "retryPolicy": {
+                    "maxDeliveryAttempts": 30,
+                    "eventTimeToLiveInMinutes": 1440
+                }
+            }
+        },
+        {
+            "type": "Microsoft.EventGrid/domains/topics/eventSubscriptions",
+            "apiVersion": "2023-06-01-preview",
+            "name": "[concat(variables('eventGridDomainName'),'/',variables('eventGridDomainTopic1Name'),'/egConsume2')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "destination": {
+                    "properties": {
+                        "resourceId": "[concat(resourceId('Microsoft.Web/sites',variables('functionAppName')),'/functions/BSystemConsumer')]",
                         "maxEventsPerBatch": 1,
                         "preferredBatchSizeInKilobytes": 64
                     },

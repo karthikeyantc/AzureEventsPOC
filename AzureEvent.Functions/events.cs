@@ -33,12 +33,12 @@ namespace AzureEvent.Function
                 string domainEndpoint = Environment.GetEnvironmentVariable($"DomainEndpoint{domainName.ToLower()}");
                 string domainKey = Environment.GetEnvironmentVariable($"DomainKey{domainName.ToLower()}");
                 EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), new AzureKeyCredential(domainKey));
-                BinaryData requestBodyBinary = BinaryData.FromObjectAsJson(eventslist);
+                BinaryData requestBodyBinary = BinaryData.FromString(JsonConvert.SerializeObject(eventslist));
                 List<EventGridEvent> events = EventGridEvent.ParseMany(requestBodyBinary).ToList();
                 Response result = await client.SendEventsAsync(events);
                 // return the result's response content as a string
                 if (result.Status == 200)
-                    return new OkObjectResult(result.ContentStream);
+                    return new OkObjectResult("Events published successfully");
                 else
                     return new BadRequestObjectResult(result.ContentStream);
             }
