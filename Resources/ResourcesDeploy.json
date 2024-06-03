@@ -574,76 +574,76 @@
                 "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"https://func-azureevent-dev.azurewebsites.net/api\" />\r\n    <set-variable name=\"requestBody\" value=\"@(context.Request.Body.As&lt;JObject&gt;())\" />\r\n    <choose>\r\n      <when condition=\"@(!new int[] {1, 2}.Contains(context.Variables.GetValueOrDefault&lt;JObject&gt;(&quot;requestBody&quot;)[&quot;topic&quot;].Value&lt;int&gt;()))\">\r\n        <return-response>\r\n          <set-status code=\"400\" reason=\"Invalid topic value\" />\r\n          <set-body>\r\n                        @{\r\n                            return new JObject\r\n                            {\r\n                                [\"error\"] = \"Invalid topic value. The topic value must be in the valid topics array.\"\r\n                            }.ToString();\r\n                        }\r\n                    </set-body>\r\n        </return-response>\r\n      </when>\r\n    </choose>\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
                 "format": "xml"
             }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/events')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events',variables('apiSchemaName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "Events",
+                "method": "POST",
+                "urlTemplate": "/events/egportal",
+                "templateParameters": [],
+                "description": "API to send a events to a domain",
+                "request": {
+                    "queryParameters": [],
+                    "headers": [],
+                    "representations": [
+                        {
+                            "contentType": "application/json",
+                            "examples": {
+                                "default": {
+                                    "value": {
+                                        "topic": "string",
+                                        "id": "string",
+                                        "eventType": "string",
+                                        "subject": "string",
+                                        "eventTime": "2018-10-30T21:03:07+00:00",
+                                        "data": {},
+                                        "dataVersion": "1.0"
+                                    }
+                                }
+                            },
+                            "schemaId": "[variables('apiSchemaName')]",
+                            "typeName": "Request Body"
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "description": "Returns a success response",
+                        "representations": [],
+                        "headers": []
+                    },
+                    {
+                        "statusCode": 400,
+                        "description": "Bad Request",
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/events/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('apiManagementName'), 'Events', 'events')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]",
+                "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'functionAppBaseUrl')]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"{{functionappbaseurl}}\" />\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
         }
-        // {
-        //     "type": "Microsoft.ApiManagement/service/apis/operations",
-        //     "apiVersion": "2023-03-01-preview",
-        //     "name": "[concat(variables('apiManagementName'), '/Events/Events')]",
-        //     "dependsOn": [
-        //         "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events',variables('apiSchemaName'))]",
-        //         "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
-        //         "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
-        //     ],
-        //     "properties": {
-        //         "displayName": "Events",
-        //         "method": "POST",
-        //         "urlTemplate": "/events/egportal",
-        //         "templateParameters": [],
-        //         "description": "API to send a events to a domain",
-        //         "request": {
-        //             "queryParameters": [],
-        //             "headers": [],
-        //             "representations": [
-        //                 {
-        //                     "contentType": "application/json",
-        //                     "examples": {
-        //                         "default": {
-        //                             "value": {
-        //                                 "topic": "string",
-        //                                 "id": "string",
-        //                                 "eventType": "string",
-        //                                 "subject": "string",
-        //                                 "eventTime": "2018-10-30T21:03:07+00:00",
-        //                                 "data": {},
-        //                                 "dataVersion": "1.0"
-        //                             }
-        //                         }
-        //                     },
-        //                     "schemaId": "[variables('apiSchemaName')]",
-        //                     "typeName": "Request Body"
-        //                 }
-        //             ]
-        //         },
-        //         "responses": [
-        //             {
-        //                 "statusCode": 200,
-        //                 "description": "Returns a success response",
-        //                 "representations": [],
-        //                 "headers": []
-        //             },
-        //             {
-        //                 "statusCode": 400,
-        //                 "description": "Bad Request",
-        //                 "representations": [],
-        //                 "headers": []
-        //             }
-        //         ]
-        //     }
-        // },
-        // {
-        //     "type": "Microsoft.ApiManagement/service/apis/operations/policies",
-        //     "apiVersion": "2023-03-01-preview",
-        //     "name": "[concat(variables('apiManagementName'), '/Events/events/policy')]",
-        //     "dependsOn": [
-        //         "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('apiManagementName'), 'Events', 'events')]",
-        //         "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
-        //         "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]",
-        //         "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'functionAppBaseUrl')]"
-        //     ],
-        //     "properties": {
-        //         "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"{{functionappbaseurl}}\" />\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
-        //         "format": "xml"
-        //     }
-        // }
     ]
 }
