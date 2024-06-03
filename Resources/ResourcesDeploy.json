@@ -636,7 +636,8 @@
             "dependsOn": [
                 "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('apiManagementName'), 'Events', 'events')]",
                 "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
-                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]",
+                "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'functionAppBaseUrl')]"
             ],
             "properties": {
                 "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"{{functionappbaseurl}}\" />\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
