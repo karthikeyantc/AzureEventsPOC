@@ -301,7 +301,7 @@
             ],
             "properties": {
                 "displayName": "functionAppBaseUrl",
-                "value": "[reference(resourceId('Microsoft.Web/sites', variables('functionAppName')), '2022-09-01').defaultHostName]",
+                "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api')]",
                 "secret": false
             }
         },
