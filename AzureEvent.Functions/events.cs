@@ -29,7 +29,17 @@ namespace AzureEvent.Function
                 // dynamic data = JsonConvert.DeserializeObject(requestBody);
                 //Event Grid Domain client
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                List<EventModel> eventslist = JsonConvert.DeserializeObject<List<EventModel>>(requestBody);
+                List<EventModel> eventslist = new List<EventModel>();
+                if (requestBody.TrimStart().StartsWith("["))
+                {
+                    eventslist = JsonConvert.DeserializeObject<List<EventModel>>(requestBody);
+                    // Process the list
+                }
+                else
+                {
+                    eventslist = new List<EventModel> { JsonConvert.DeserializeObject<EventModel>(requestBody) };
+                    // Process the single object
+                }
                 string domainEndpoint = Environment.GetEnvironmentVariable($"DomainEndpoint{domainName.ToLower()}");
                 string domainKey = Environment.GetEnvironmentVariable($"DomainKey{domainName.ToLower()}");
                 EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), new AzureKeyCredential(domainKey));

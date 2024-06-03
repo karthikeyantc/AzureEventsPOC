@@ -611,6 +611,26 @@
                             },
                             "schemaId": "[variables('apiSchemaName')]",
                             "typeName": "Request Body"
+                        },
+                        {
+                            "contentType": "application/json",
+                            "examples": {
+                                "default": {
+                                    "value": [
+                                        {
+                                            "topic": "string",
+                                            "id": "string",
+                                            "eventType": "string",
+                                            "subject": "string",
+                                            "eventTime": "2018-10-30T21:03:07+00:00",
+                                            "data": {},
+                                            "dataVersion": "1.0"
+                                        }
+                                    ]
+                                }
+                            },
+                            "schemaId": "[variables('apiSchemaName')]",
+                            "typeName": "Request Body"
                         }
                     ]
                 },
