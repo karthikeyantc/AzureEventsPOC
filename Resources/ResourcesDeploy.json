@@ -306,6 +306,34 @@
             }
         },
         {
+            "type": "Microsoft.ApiManagement/service/namedValues",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/subscriptionId')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "subscriptionId",
+                "value": "7f6a8cca-0003-48bf-bc34-52e6710ed352",
+                "tags": [],
+                "secret": false
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/namedValues",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/resourceGroupName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "displayName": "resourceGroupName",
+                "value": "rg-azureevent-dev",
+                "tags": [],
+                "secret": false
+            }
+        },
+        {
             "type": "Microsoft.ApiManagement/service/apis",
             "apiVersion": "2023-03-01-preview",
             "name": "[concat(variables('apiManagementName'), '/Events')]",
@@ -658,10 +686,12 @@
                 "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('apiManagementName'), 'Events', 'events')]",
                 "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
                 "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]",
-                "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'functionAppBaseUrl')]"
+                "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'functionAppBaseUrl')]",
+                "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'subscriptionId')]",
+                "[resourceId('Microsoft.ApiManagement/Service/namedValues', variables('apiManagementName'), 'resourceGroupName')]"
             ],
             "properties": {
-                "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"{{functionappbaseurl}}\" />\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "value": "<!--\r\n    - Policies are applied in the order they appear.\r\n    - Position <base/> inside a section to inherit policies from the outer scope.\r\n    - Comments within policies are not preserved.\r\n-->\r\n<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->\r\n<policies>\r\n  <!-- Throttle, authorize, validate, cache, or transform the requests -->\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service base-url=\"{{functionAppBaseUrl}}\" />\r\n    <set-variable name=\"domainName\" value=\"egportal\" />\r\n    <send-request mode=\"new\" response-variable-name=\"domainTopicsResponse\" timeout=\"20\" ignore-error=\"true\">\r\n      <set-url>https://management.azure.com/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.EventGrid/domains/egportal-azureevent-dev/topics?api-version=2020-06-01</set-url>\r\n      <set-method>GET</set-method>\r\n      <authentication-managed-identity resource=\"https://management.azure.com/\" />\r\n    </send-request>\r\n    <!-- Use JavaScript to parse the response and check the topic names -->\r\n    <choose>\r\n      <when condition=\"@{&#xA;                if (context.Variables[&quot;domainTopicsResponse&quot;] != null)&#xA;                {&#xA;                    var domainTopicsResponse = Newtonsoft.Json.Linq.JObject.Parse(((IResponse)context.Variables[&quot;domainTopicsResponse&quot;]).Body.As&lt;string&gt;());&#xA;                    var domainTopicNames = domainTopicsResponse[&quot;value&quot;].Select(t =&gt; t[&quot;name&quot;].ToString()).ToList();&#xA;                    var requestTopics = Newtonsoft.Json.Linq.JArray.Parse(context.Request.Body.As&lt;string&gt;(preserveContent: true));&#xA;                    foreach (var topic in requestTopics)&#xA;                    {&#xA;                        if (!domainTopicNames.Contains(topic[&quot;topic&quot;].ToString()))&#xA;                        {&#xA;                            return false;&#xA;                        }&#xA;                    }&#xA;                    return true;&#xA;                }&#xA;                return false;&#xA;            }\">\r\n        <!-- If all topic names are in the list, do nothing -->\r\n      </when>\r\n      <otherwise>\r\n        <!-- If any topic name is not in the list, return an error -->\r\n        <return-response>\r\n          <set-status code=\"400\" reason=\"Invalid topic name\" />\r\n          <set-body>{\"error\": \"The topic name in the request is not valid.\"}</set-body>\r\n        </return-response>\r\n      </otherwise>\r\n    </choose>\r\n  </inbound>\r\n  <!-- Control if and how the requests are forwarded to services  -->\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <!-- Customize the responses -->\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <!-- Handle exceptions and customize error responses  -->\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
                 "format": "xml"
             }
         }

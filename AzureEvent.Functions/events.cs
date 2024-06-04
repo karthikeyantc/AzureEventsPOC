@@ -25,19 +25,20 @@ namespace AzureEvent.Function
             try
             {
                 log.LogInformation("The event mapper function is processing a request.");
-                // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                // dynamic data = JsonConvert.DeserializeObject(requestBody);
+
                 //Event Grid Domain client
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 List<EventModel> eventslist = new List<EventModel>();
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new EventModelConverter());
                 if (requestBody.TrimStart().StartsWith("["))
                 {
-                    eventslist = JsonConvert.DeserializeObject<List<EventModel>>(requestBody);
+                    eventslist = JsonConvert.DeserializeObject<List<EventModel>>(requestBody, settings);
                     // Process the list
                 }
                 else
                 {
-                    eventslist = new List<EventModel> { JsonConvert.DeserializeObject<EventModel>(requestBody) };
+                    eventslist = new List<EventModel> { JsonConvert.DeserializeObject<EventModel>(requestBody, settings) };
                     // Process the single object
                 }
                 string domainEndpoint = Environment.GetEnvironmentVariable($"DomainEndpoint{domainName.ToLower()}");
@@ -55,8 +56,30 @@ namespace AzureEvent.Function
             catch (Exception ex)
             {
                 log.LogError($"An error occurred: {ex.Message}");
-                return new BadRequestObjectResult("An error occurred");
+                return new BadRequestObjectResult("An error occurred with message: " + ex.Message);
             }
+        }
+    }
+    public class EventModelConverter : JsonConverter<EventModel>
+    {
+        public override EventModel ReadJson(JsonReader reader, Type objectType, EventModel existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            var eventModel = new EventModel();
+            serializer.Populate(reader, eventModel);
+
+            // Ensure default values
+            if (string.IsNullOrWhiteSpace(eventModel.id)) eventModel.id = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(eventModel.subject)) eventModel.subject = "EventGridModel";
+            if (string.IsNullOrWhiteSpace(eventModel.eventType)) eventModel.eventType = "Azure.Sdk.Sample";
+            if (eventModel.eventTime == default) eventModel.eventTime = DateTimeOffset.UtcNow;
+            if (string.IsNullOrWhiteSpace(eventModel.dataVersion)) eventModel.dataVersion = "1.0";
+
+            return eventModel;
+        }
+
+        public override void WriteJson(JsonWriter writer, EventModel value, JsonSerializer serializer)
+        {
+            serializer.Serialize(writer, value);
         }
     }
 }
