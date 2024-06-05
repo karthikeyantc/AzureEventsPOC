@@ -638,7 +638,7 @@
                     "headers": [],
                     "representations": [
                         {
-                            "contentType": "application/vnd.oai.openapi.components+json",
+                            "contentType": "application/json",
                             "schema": {
                                 "type": "array",
                                 "items": {
@@ -680,6 +680,24 @@
                                     }
                                 }
                             },
+                            "examples": {
+                                "default": {
+                                    "value": [
+                                        {
+                                            "topic": "ASystem",
+                                            "id": "1",
+                                            "eventType": "recordInserted",
+                                            "subject": "recordInserted",
+                                            "eventTime": "2022-01-01T00:00:00Z",
+                                            "data": {
+                                                "key": "value"
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            "sample": "\\[\r\n    {\r\n        \"topic\": \"ASystem\",\r\n        \"id\": \"1\",\r\n        \"eventType\": \"recordInserted\",\r\n        \"subject\": \"recordInserted\",\r\n        \"eventTime\": \"2022-01-01T00:00:00Z\",\r\n        \"data\": {\r\n            \"key\": \"value\"\r\n        }\r\n    }\r\n]\\",
+                            "schemaId": "[variables('apiSchemaName')]",
                             "typeName": "Request Body"
                         }
                     ]
