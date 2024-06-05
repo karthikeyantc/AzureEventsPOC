@@ -627,7 +627,7 @@
                 "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
             ],
             "properties": {
-                "contentType": "application/json",
+                "contentType": "application/vnd.oai.openapi.components+json",
                 "document": {
                     "properties": {
                         "topic": {
@@ -689,7 +689,7 @@
                     "headers": [],
                     "representations": [
                         {
-                            "contentType": "application/json",
+                            "contentType": "application/vnd.oai.openapi.components+json",
                             "schemaId": "EventSchema",
                             "typeName": "EventSchema"
                         }
