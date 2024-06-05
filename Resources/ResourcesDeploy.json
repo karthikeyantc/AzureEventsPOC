@@ -619,6 +619,56 @@
             }
         },
         {
+            "type": "Microsoft.ApiManagement/service/apis/schemas",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(variables('apiManagementName'), '/Events/EventSchema')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
+                "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
+            ],
+            "properties": {
+                "contentType": "application/vnd.oai.openapi.components+json",
+                "document": {
+                    "properties": {
+                        "topic": {
+                            "type": "string",
+                            "description": "The name of the topic",
+                            "enum": [
+                                "ASystem",
+                                "BSystem"
+                            ],
+                            "required": true
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "A unique identifier for the event",
+                            "required": false
+                        },
+                        "eventType": {
+                            "type": "string",
+                            "description": "The type of the event",
+                            "required": false
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "The subject of the event",
+                            "required": false
+                        },
+                        "eventTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The time the event occurred",
+                            "required": false
+                        },
+                        "data": {
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            }
+        },
+        {
             "type": "Microsoft.ApiManagement/service/apis/operations",
             "apiVersion": "2023-03-01-preview",
             "name": "[concat(variables('apiManagementName'), '/Events/events')]",
@@ -641,24 +691,6 @@
                             "contentType": "application/json",
                             "examples": {
                                 "default": {
-                                    "value": {
-                                        "topic": "string",
-                                        "id": "string",
-                                        "eventType": "string",
-                                        "subject": "string",
-                                        "eventTime": "2018-10-30T21:03:07+00:00",
-                                        "data": {},
-                                        "dataVersion": "1.0"
-                                    }
-                                }
-                            },
-                            "schemaId": "[variables('apiSchemaName')]",
-                            "typeName": "Request Body"
-                        },
-                        {
-                            "contentType": "application/json",
-                            "examples": {
-                                "default": {
                                     "value": [
                                         {
                                             "topic": "string",
@@ -666,13 +698,12 @@
                                             "eventType": "string",
                                             "subject": "string",
                                             "eventTime": "2018-10-30T21:03:07+00:00",
-                                            "data": {},
-                                            "dataVersion": "1.0"
+                                            "data": {}
                                         }
                                     ]
                                 }
                             },
-                            "schemaId": "[variables('apiSchemaName')]",
+                            "schemaId": "EventSchema",
                             "typeName": "Request Body"
                         }
                     ]
