@@ -640,44 +640,42 @@
                         {
                             "contentType": "application/vnd.oai.openapi.components+json",
                             "schema": {
-                                "properties": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "topic": {
-                                                "type": "string",
-                                                "description": "The name of the topic",
-                                                "enum": [
-                                                    "ASystem",
-                                                    "BSystem"
-                                                ],
-                                                "required": true
-                                            },
-                                            "id": {
-                                                "type": "string",
-                                                "description": "A unique identifier for the event",
-                                                "required": false
-                                            },
-                                            "eventType": {
-                                                "type": "string",
-                                                "description": "The type of the event",
-                                                "required": false
-                                            },
-                                            "subject": {
-                                                "type": "string",
-                                                "description": "The subject of the event",
-                                                "required": false
-                                            },
-                                            "eventTime": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "description": "The time the event occurred",
-                                                "required": false
-                                            },
-                                            "data": {
-                                                "type": "object"
-                                            }
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "topic": {
+                                            "type": "string",
+                                            "description": "The name of the topic",
+                                            "enum": [
+                                                "ASystem",
+                                                "BSystem"
+                                            ],
+                                            "required": true
+                                        },
+                                        "id": {
+                                            "type": "string",
+                                            "description": "A unique identifier for the event",
+                                            "required": false
+                                        },
+                                        "eventType": {
+                                            "type": "string",
+                                            "description": "The type of the event",
+                                            "required": false
+                                        },
+                                        "subject": {
+                                            "type": "string",
+                                            "description": "The subject of the event",
+                                            "required": false
+                                        },
+                                        "eventTime": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "description": "The time the event occurred",
+                                            "required": false
+                                        },
+                                        "data": {
+                                            "type": "object"
                                         }
                                     }
                                 }
