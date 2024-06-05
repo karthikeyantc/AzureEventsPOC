@@ -673,6 +673,7 @@
             "apiVersion": "2023-03-01-preview",
             "name": "[concat(variables('apiManagementName'), '/Events/events')]",
             "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events','EventSchema')]",
                 "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events',variables('apiSchemaName'))]",
                 "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
                 "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
@@ -704,7 +705,7 @@
                                 }
                             },
                             "schemaId": "EventSchema",
-                            "typeName": "Request Body"
+                            "typeName": "EventSchema"
                         }
                     ]
                 },
