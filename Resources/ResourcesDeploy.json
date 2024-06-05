@@ -618,62 +618,11 @@
                 "format": "xml"
             }
         },
-        // {
-        //     "type": "Microsoft.ApiManagement/service/apis/schemas",
-        //     "apiVersion": "2023-03-01-preview",
-        //     "name": "[concat(variables('apiManagementName'), '/Events/EventSchema')]",
-        //     "dependsOn": [
-        //         "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
-        //         "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
-        //     ],
-        //     "properties": {
-        //         "contentType": "application/vnd.oai.openapi.components+json",
-        //         "document": {
-        //             "properties": {
-        //                 "topic": {
-        //                     "type": "string",
-        //                     "description": "The name of the topic",
-        //                     "enum": [
-        //                         "ASystem",
-        //                         "BSystem"
-        //                     ],
-        //                     "required": true
-        //                 },
-        //                 "id": {
-        //                     "type": "string",
-        //                     "description": "A unique identifier for the event",
-        //                     "required": false
-        //                 },
-        //                 "eventType": {
-        //                     "type": "string",
-        //                     "description": "The type of the event",
-        //                     "required": false
-        //                 },
-        //                 "subject": {
-        //                     "type": "string",
-        //                     "description": "The subject of the event",
-        //                     "required": false
-        //                 },
-        //                 "eventTime": {
-        //                     "type": "string",
-        //                     "format": "date-time",
-        //                     "description": "The time the event occurred",
-        //                     "required": false
-        //                 },
-        //                 "data": {
-        //                     "type": "object"
-        //                 }
-        //             },
-        //             "type": "object"
-        //         }
-        //     }
-        // },
         {
             "type": "Microsoft.ApiManagement/service/apis/operations",
             "apiVersion": "2023-03-01-preview",
             "name": "[concat(variables('apiManagementName'), '/Events/events')]",
             "dependsOn": [
-                // "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events','EventSchema')]",
                 "[resourceId('Microsoft.ApiManagement/service/apis/schemas', variables('apiManagementName'), 'Events',variables('apiSchemaName'))]",
                 "[resourceId('Microsoft.ApiManagement/service/apis', variables('apiManagementName'), 'Events')]",
                 "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementName'))]"
