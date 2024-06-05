@@ -639,7 +639,7 @@
                     "representations": [
                         {
                             "contentType": "application/vnd.oai.openapi.components+json",
-                            "document": {
+                            "schema": {
                                 "properties": {
                                     "type": "array",
                                     "items": {
@@ -682,7 +682,6 @@
                                     }
                                 }
                             },
-                            "schemaId": "[variables('apiSchemaName')]",
                             "typeName": "Request Body"
                         }
                     ]
