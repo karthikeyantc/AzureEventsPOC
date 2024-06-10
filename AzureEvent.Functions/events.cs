@@ -20,7 +20,7 @@ namespace AzureEvent.Function
     {
         [FunctionName("events")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "events/{domainName}")] HttpRequest req, string domainName,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "events/{domainName}")] HttpRequest req, string domainName,
             ILogger log)
         {
             try
