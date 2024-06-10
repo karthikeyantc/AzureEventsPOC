@@ -12,6 +12,7 @@ using Azure.Messaging.EventGrid;
 using Azure;
 using System.Linq;
 using AzureEvent.Functions;
+using Azure.Identity;
 
 namespace AzureEvent.Function
 {
@@ -42,8 +43,12 @@ namespace AzureEvent.Function
                     // Process the single object
                 }
                 string domainEndpoint = Environment.GetEnvironmentVariable($"DomainEndpoint{domainName.ToLower()}");
-                string domainKey = Environment.GetEnvironmentVariable($"DomainKey{domainName.ToLower()}");
-                EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), new AzureKeyCredential(domainKey));
+                // string domainKey = Environment.GetEnvironmentVariable($"DomainKey{domainName.ToLower()}");
+                // EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), new AzureKeyCredential(domainKey));
+                var clientId = "145a79a6-042d-4be2-9f56-9caf813c3a53"; // Replace with your Managed Identity's Client Id
+                var options = new DefaultAzureCredentialOptions { ManagedIdentityClientId = clientId };
+                var credential = new DefaultAzureCredential(options);
+                EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), credential);
                 BinaryData requestBodyBinary = BinaryData.FromString(JsonConvert.SerializeObject(eventslist));
                 List<EventGridEvent> events = EventGridEvent.ParseMany(requestBodyBinary).ToList();
                 Response result = await client.SendEventsAsync(events);
