@@ -70,7 +70,7 @@ stages:
                                   path: "$(Pipeline.Workspace)/drop"
                             - template: Deploy/arm-steps-deploy.yml
                               parameters:
-                                  taskAzureResourceManagerConnection: "Azure For Students"
+                                  taskAzureResourceManagerConnection: "AzDeployADOPipelines"
                                   taskResourceGroupName: "rg-azureevent-dev"
                                   taskEnvironmentFilePath: "$(Pipeline.Workspace)/drop/Resources/ResourcesDeploy.parameters.json"
                                   taskLocation: "East US"
