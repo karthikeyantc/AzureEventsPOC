@@ -776,11 +776,14 @@
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2020-04-01-preview",
             "name": "[guid(resourceGroup().id, resourceId('Microsoft.EventGrid/domains',variables('eventDomainName')), 'Event Data Sender')]",
+            "scope": "[resourceId('Microsoft.EventGrid/domains',variables('eventDomainName'))]",
             "properties": {
-                "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/d5a91429-5739-47e2-a06b-3470a27159e7",
-                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30').principalId]",
-                "scope": "[resourceId('Microsoft.EventGrid/domains',variables('eventDomainName'))]"
-            }
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/d5a91429-5739-47e2-a06b-3470a27159e7')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30').principalId]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/domains',variables('eventDomainName'))]"
+            ]
         }
     ]
 }
