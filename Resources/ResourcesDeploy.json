@@ -783,6 +783,19 @@
             "dependsOn": [
                 "[resourceId('Microsoft.EventGrid/domains',variables('eventDomainName'))]"
             ]
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2020-04-01-preview",
+            "name": "[guid(resourceId('ReactNetTest','Microsoft.Storage/storageAccounts', replace(variables('storageAccountName'), 'sa','st')), 'EventError Log')]",
+            "scope": "[resourceId('ReactNetTest','Microsoft.Storage/storageAccounts', replace(variables('storageAccountName'), 'sa','st'))]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30').principalId]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/domains',variables('eventDomainName'))]"
+            ]
         }
     ]
 }
