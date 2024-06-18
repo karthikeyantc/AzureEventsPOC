@@ -785,13 +785,28 @@
             ]
         },
         {
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2020-04-01-preview",
-            "name": "[guid(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/ReactNetTest/providers/Microsoft.Storage/storageAccounts/', replace(variables('storageAccountName'), 'sa','st')), 'EventError Log')]",
-            "scope": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/ReactNetTest/providers/Microsoft.Storage/storageAccounts/', replace(variables('storageAccountName'), 'sa','st'))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "Assign Azure Role Assignment to Storage Account",
+            "resourceGroup": "ReactNetTest",
             "properties": {
-                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
-                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30').principalId]"
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "apiVersion": "2020-04-01-preview",
+                            "name": "[guid(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/ReactNetTest/providers/Microsoft.Storage/storageAccounts/', replace(variables('storageAccountName'), 'sa','st')), 'EventError Log')]",
+                            "scope": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/ReactNetTest/providers/Microsoft.Storage/storageAccounts/', replace(variables('storageAccountName'), 'sa','st'))]",
+                            "properties": {
+                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+                                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssi gnedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30').principalId]"
+                            }
+                        }
+                    ]
+                }
             }
         }
     ]
