@@ -50,11 +50,11 @@ namespace AzureEvent.Function
                 EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), credential);
 
                 string json = JsonConvert.SerializeObject(eventslist);
-                log.LogInformation($"Events: {json}");
+                // log.LogInformation($"Events: {json}");
                 BinaryData requestBodyBinary = BinaryData.FromString(json);
                 List<EventGridEvent> events = EventGridEvent.ParseMany(requestBodyBinary).ToList();
                 Response result = await client.SendEventsAsync(events);
-
+                throw new Exception("An error occurred while publishing events, Please check the payload and try again.");
                 // return the result's response content as a string
                 if (result.Status == 200)
                     return new OkObjectResult("Events published successfully");
