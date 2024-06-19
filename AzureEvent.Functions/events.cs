@@ -85,7 +85,8 @@ namespace AzureEvent.Function
                 string blobName = req.Headers["API-ID"] + ".txt";
                 log.LogInformation($"Blob Name: {blobName}");
                 log.LogInformation($"The Token is : {token.Token}");
-                // Prepare the request
+                // Prepare the 
+                req.Body.Position = 0;
                 var request = new HttpRequestMessage(HttpMethod.Put, $"https://azureeventsa.blob.core.windows.net/apimlog/events/{domainName}/{blobName}")
                 {
                     Content = new StreamContent(req.Body)
