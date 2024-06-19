@@ -14,6 +14,9 @@ using System.Linq;
 using AzureEvent.Functions;
 using Azure.Identity;
 using Newtonsoft.Json.Serialization;
+using Azure.Core;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace AzureEvent.Function
 {
@@ -24,60 +27,6 @@ namespace AzureEvent.Function
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "events/{domainName}")] HttpRequest req, string domainName,
             ILogger log)
         {
-            // try
-            // {
-            //     log.LogInformation("The event mapper function is processing a request.");
-
-            //     //Event Grid Domain client
-            //     string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //     List<EventModel> eventslist = new List<EventModel>();
-            //     var settings = new JsonSerializerSettings();
-            //     settings.Converters.Add(new EventModelConverter());
-            //     settings.ContractResolver = new DefaultContractResolver
-            //     {
-            //         NamingStrategy = new CamelCaseNamingStrategy()
-            //     };
-            //     // if (requestBody.TrimStart().StartsWith("["))
-            //     // {
-            //     //     eventslist = JsonConvert.DeserializeObject<List<EventModel>>(requestBody, settings);
-            //     //     // Process the list
-            //     // }
-            //     // else
-            //     // {
-            //     //     eventslist = new List<EventModel> { JsonConvert.DeserializeObject<EventModel>(requestBody, settings) };
-            //     //     // Process the single object
-            //     // }
-            //     eventslist = JsonConvert.DeserializeObject<List<EventModel>>(requestBody, settings);
-            //     string domainEndpoint = Environment.GetEnvironmentVariable($"DomainEndpoint{domainName.ToLower()}");
-            //     // string domainKey = Environment.GetEnvironmentVariable($"DomainKey{domainName.ToLower()}");
-            //     // EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), new AzureKeyCredential(domainKey));
-            //     var clientId = "145a79a6-042d-4be2-9f56-9caf813c3a53"; // Replace with your Managed Identity's Client Id
-            //     var options = new DefaultAzureCredentialOptions { ManagedIdentityClientId = clientId };
-            //     var credential = new DefaultAzureCredential(options);
-            //     EventGridPublisherClient client = new EventGridPublisherClient(new Uri(domainEndpoint), credential);
-            //     var settings1 = new JsonSerializerSettings
-            //     {
-            //         ContractResolver = new DefaultContractResolver
-            //         {
-            //             NamingStrategy = new CamelCaseNamingStrategy()
-            //         }
-            //     };
-            //     string json = JsonConvert.SerializeObject(eventslist, settings1);
-            //     log.LogInformation($"Events: {json}");
-            //     BinaryData requestBodyBinary = BinaryData.FromString(json);
-            //     List<EventGridEvent> events = EventGridEvent.ParseMany(requestBodyBinary).ToList();
-            //     Response result = await client.SendEventsAsync(events);
-            //     // return the result's response content as a string
-            //     if (result.Status == 200)
-            //         return new OkObjectResult("Events published successfully");
-            //     else
-            //         return new BadRequestObjectResult(result.ContentStream);
-            // }
-            // catch (Exception ex)
-            // {
-            //     log.LogError($"An error occurred: {ex.Message}");
-            //     return new BadRequestObjectResult("An error occurred with message: " + ex.Message);
-            // }
             try
             {
                 log.LogInformation("The event mapper function is processing a request.");
@@ -114,11 +63,44 @@ namespace AzureEvent.Function
             }
             catch (Exception ex)
             {
+                await SendErrorToStorage(req, domainName, log);
                 log.LogError($"An error occurred: {ex.Message}");
                 return new BadRequestObjectResult("An error occurred with message: " + ex.Message);
             }
         }
+        private static async Task SendErrorToStorage(HttpRequest req, string domainName, ILogger log)
+        {
+            var clientId = "145a79a6-042d-4be2-9f56-9caf813c3a53"; // Replace with your Managed Identity's Client Id
+            var options = new DefaultAzureCredentialOptions { ManagedIdentityClientId = clientId };
+            var credential = new DefaultAzureCredential(options);
+            var tokenRequestContext = new TokenRequestContext(new[] { "https://storage.azure.com/.default" });
+            AccessToken token = await credential.GetTokenAsync(tokenRequestContext);
+
+            // Create a unique name for the blob
+            string blobName = req.Headers["API-ID"] + ".txt";
+
+            // Prepare the request
+            var request = new HttpRequestMessage(HttpMethod.Put, $"https://azureeventsa.blob.core.windows.net/apimlog/events/{domainName}/{blobName}")
+            {
+                Content = new StreamContent(req.Body)
+            };
+
+            // Add headers
+            request.Headers.Add("x-ms-blob-type", "BlockBlob");
+            request.Headers.Add("x-ms-version", "2019-07-07");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+
+            // Send the request
+            var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                log.LogError($"Failed to upload blob: {response.StatusCode}");
+            }
+        }
     }
+
     public class EventModelConverter : JsonConverter<EventModel>
     {
         public override EventModel ReadJson(JsonReader reader, Type objectType, EventModel existingValue, bool hasExistingValue, JsonSerializer serializer)
