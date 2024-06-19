@@ -814,7 +814,7 @@
     ],
     "outputs": {
         "identityId": {
-            "type": "string",
+            "type": "object",
             "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30', 'Full')]"
         }
     }
