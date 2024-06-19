@@ -27,6 +27,8 @@ namespace AzureEvent.Function
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "events/{domainName}")] HttpRequest req, string domainName,
             ILogger log)
         {
+            using var reader = new StreamReader(req.Body);
+            var requestBody = await reader.ReadToEndAsync();
             try
             {
                 log.LogInformation("The event mapper function is processing a request.");
@@ -36,7 +38,7 @@ namespace AzureEvent.Function
                 var settings = new JsonSerializerSettings();
                 settings.Converters.Add(new EventModelConverter());
 
-                using (var streamReader = new StreamReader(req.Body))
+                using (var streamReader = new StringReader(requestBody))
                 using (var jsonReader = new JsonTextReader(streamReader))
                 {
                     var serializer = JsonSerializer.Create(settings);
@@ -65,12 +67,12 @@ namespace AzureEvent.Function
             }
             catch (Exception ex)
             {
-                await SendErrorToStorage(req, domainName, log);
+                await SendErrorToStorage(req, domainName, log, requestBody);
                 log.LogError($"An error occurred: {ex.Message}");
                 return new BadRequestObjectResult("An error occurred with message: " + ex.Message);
             }
         }
-        private static async Task SendErrorToStorage(HttpRequest req, string domainName, ILogger log)
+        private static async Task SendErrorToStorage(HttpRequest req, string domainName, ILogger log, string requestBody)
         {
             try
             {
@@ -89,7 +91,7 @@ namespace AzureEvent.Function
                 req.Body.Position = 0;
                 var request = new HttpRequestMessage(HttpMethod.Put, $"https://azureeventsa.blob.core.windows.net/apimlog/events/{domainName}/{blobName}")
                 {
-                    Content = new StreamContent(req.Body)
+                    Content = new StringContent(requestBody)
                 };
 
                 // Add headers
