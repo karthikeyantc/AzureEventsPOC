@@ -252,6 +252,10 @@
                         {
                             "name": "DomainKeyegportal",
                             "value": "[listKeys(resourceId('Microsoft.EventGrid/domains',variables('eventDomainName')), '2023-06-01-preview').key1]"
+                        },
+                        {
+                            "name": "ManagedIdentityClientId",
+                            "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30').clientId]"
                         }
                     ]
                 },
@@ -811,5 +815,11 @@
                 "[resourceId('Microsoft.EventGrid/domains',variables('eventDomainName'))]"
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "identityId": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', replace(resourceGroup().name, 'rg','mgid')), '2018-11-30', 'Full').clientId]"
+        }
+    }
 }
