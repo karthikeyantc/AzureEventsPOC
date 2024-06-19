@@ -59,7 +59,9 @@ namespace AzureEvent.Function
                 if (result.Status == 200)
                     return new OkObjectResult("Events published successfully");
                 else
-                    return new BadRequestObjectResult(result.ContentStream);
+                {
+                    throw new Exception("An error occurred while publishing events, Please check the payload and try again.");
+                }
             }
             catch (Exception ex)
             {
