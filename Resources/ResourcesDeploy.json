@@ -761,7 +761,7 @@
                                     ]
                                 }
                             },
-                            "sample": "\\[\r\n    {\r\n        \"topic\": \"ASystem\",\r\n        \"id\": \"1\",\r\n        \"eventType\": \"recordInserted\",\r\n        \"subject\": \"recordInserted\",\r\n        \"eventTime\": \"2022-01-01T00:00:00Z\",\r\n        \"data\": {\r\n            \"key\": \"value\"\r\n        }\r\n    }\r\n]\\",
+                            "sample": "[concat('[', '\r\n    {', '\r\n        \"topic\": \"ASystem\",', '\r\n        \"id\": \"1\",', '\r\n        \"eventType\": \"recordInserted\",', '\r\n        \"subject\": \"recordInserted\",', '\r\n        \"eventTime\": \"2022-01-01T00:00:00Z\",', '\r\n        \"data\": {', '\r\n            \"key\": \"value\"', '\r\n        }', '\r\n    }', '\r\n]')]",
                             "schemaId": "[variables('apiSchemaName')]",
                             "typeName": "Request Body"
                         }
