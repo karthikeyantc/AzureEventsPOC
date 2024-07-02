@@ -11,6 +11,7 @@
     "ACSEmailConnectionString": "endpoint=https://acs-influencers-dev.uk.communication.azure.com/;accesskey=nk5JfXicMUulib5rQlRJ+ozg8I2b9wP0QKXYaCf5Yc4klenxuYiKbB2S1KDQDrYqOjpOuwRNdWqzY5moHxLNWg==",
     "ACSEmailSender": "DoNotReply@d15250da-f0e7-4227-b3d4-630989713467.azurecomm.net",
     "DomainEndpointegportal": "https://egportal-azureevent-dev.eastus-1.eventgrid.azure.net/api/events",
-    "DomainKeyegportal": "V1M+sOpfukAyrmZABMgr+40Rs6hgP4clqAZEGLVlCeI="
+    "DomainKeyegportal": "V1M+sOpfukAyrmZABMgr+40Rs6hgP4clqAZEGLVlCeI=",
+    "ManagedIdentityClientId": "145a79a6-042d-4be2-9f56-9caf813c3a53"
   }
 }
