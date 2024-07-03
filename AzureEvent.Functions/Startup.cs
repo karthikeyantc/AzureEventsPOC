@@ -1,8 +1,6 @@
 using System;
-using System.IO;
 using AzureEvent.Function.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: FunctionsStartup(typeof(AzureEvent.Function.Startup))]
@@ -15,11 +13,12 @@ namespace AzureEvent.Function
             try
             {
                 Console.WriteLine("Configuring services");
-                builder.Services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build());
+                // builder.Services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
+                //     .SetBasePath(Directory.GetCurrentDirectory())
+                //     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                //     .AddEnvironmentVariables()
+                //     .Build());
+                var configuration = builder.GetContext().Configuration;
                 Console.WriteLine("configuration added");
                 builder.Services.AddLogging();
                 Console.WriteLine("logging added");
