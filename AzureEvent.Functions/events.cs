@@ -20,9 +20,9 @@ namespace AzureEvent.Function
 {
     public class events
     {
-        public static IErrorStorageHandler _errorStorageHandler;
-        public static IEventModelConverterFactory _eventModelConverterFactory;
-        public static IConfiguration _configuration;
+        public readonly IErrorStorageHandler _errorStorageHandler;
+        public readonly IEventModelConverterFactory _eventModelConverterFactory;
+        public readonly IConfiguration _configuration;
         public events(IErrorStorageHandler errorStorageHandler, IEventModelConverterFactory eventModelConverterFactory, IConfiguration configuration)
         {
             _errorStorageHandler = errorStorageHandler;
@@ -30,7 +30,7 @@ namespace AzureEvent.Function
             _configuration = configuration;
         }
         [FunctionName("events")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "events/{domainName}")] HttpRequest req, string domainName,
             ILogger log)
         {
